@@ -6,7 +6,7 @@
 
 import os
 import platform
-from ai_model import AIModel, GroqModel, OpenAIModel, OllamaModel, AnthropicModel, AzureOpenAIModel
+from ai_model import AIModel, GroqModel, OpenAIModel, OllamaModel, AnthropicModel, AzureOpenAIModel, G4FModel
 import sys
 import subprocess
 import dotenv 

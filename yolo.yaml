@@ -1,5 +1,5 @@
-api: openai   # openai, azure, groq, ollama, anthropic         
-model: gpt-4o # if azure this is the deployment name
+api: g4f   # openai, azure, groq, ollama, anthropic, g4f         
+model: gpt-3.5-turbo # if azure this is the deployment name
               # other options: gpt-4o, llama3-8b-8192, or claude-3-5-sonnet-20240620
 
 # Azure specific (only needed if api: azure-openai)

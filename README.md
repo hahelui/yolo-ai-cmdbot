@@ -2,6 +2,18 @@
 
 ![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
 
+# Update Yolo v0.6 - Support for G4F and Improved Installation
+
+* Added G4F (GPT4Free) support. No API key required! Just set `api: g4f` in your `yolo.yaml`.
+* Default model for G4F is `gpt-3.5-turbo`
+* Now configured as the default API in yolo.yaml since no API key configuration is needed
+* Improved installation process with `install.sh`:
+  - Creates an isolated virtual environment for clean dependency management
+  - Particularly beneficial for Arch Linux users to avoid conflicts with system packages
+  - Automatically handles venv activation/deactivation when running commands
+  - Supports both bash and zsh shells with proper shell function integration
+* Simplified model initialization and error handling
+
 # Update Yolo v0.5 - Support for Claude and other providers
 
 * Added Claude support. Can an API key from Anthropic, current model `claude-3-5-sonnet-20240620`. 
@@ -77,6 +89,11 @@ There are three ways to configure the key on Linux and macOS:
 - Grab an API key from `console.groq.com` 
 - You can either `export GROQ_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `GROQ_API_KEY="<yourkey>"` as a line
 - Set `api` and `model` (e.g llama3-8b-8192) in `yolo.yaml` configuration file
+
+### G4F Configuration
+- No API key required!
+- Set `api: g4f` in `yolo.yaml` configuration file
+- Default model is `gpt-3.5-turbo`
 
 ## Aliases
 

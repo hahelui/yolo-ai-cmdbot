@@ -8,6 +8,7 @@ from groq import Groq
 from ollama import Client
 from openai import AzureOpenAI 
 from anthropic import Anthropic
+from g4f.client import Client as G4FClient
 import os
 
 class AIModel(ABC):
@@ -57,6 +58,9 @@ class AIModel(ABC):
             ollama_api   = os.environ.get("OLLAMA_ENDPOINT", "http://localhost:11434")
             #ollama_model = os.environ.get("OLLAMA_MODEL", "llama3-8b-8192")
             return OllamaModel(ollama_api)
+
+        elif api_provider == "g4f":
+            return G4FModel()
 
         if api_provider == "anthropic":
             api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -121,6 +125,22 @@ class AzureOpenAIModel(AIModel):
         
         return resp.choices[0].message.content
     
+    def moderate(self, message):
+        return self.client.moderations.create(input=message)
+
+class G4FModel(AIModel):
+    def __init__(self, api_key=None):
+        self.client = G4FClient()
+
+    def chat(self, messages, model, temperature, max_tokens):
+        resp = self.client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+        return resp.choices[0].message.content
+
     def moderate(self, message):
         return self.client.moderations.create(input=message)
 
