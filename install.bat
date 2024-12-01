@@ -123,11 +123,12 @@ goto :EOF
 :: Installs optional files if user wants
 :install_optional
 cls
-call :print_apikey
-choice /n /c YN /m "Let me know which option you want to select: "
+call :print_optional_menu
+choice /n /c YNOC /m "Let me know which option you want to select: "
 set /a createAPIKEY=!ERRORLEVEL!
 
 if /i !createAPIKEY!==1 ( call :create_openai_apikey )
+if /i !createAPIKEY!==3 ( exit /b 0 )
 goto :EOF
 
 :: Creates a directory to hold yolo.py and prompt.txt
@@ -198,9 +199,10 @@ echo.
 echo Installation Options:
 echo.
 echo [Y] Yolo, Default installation to your home folder ( `%HOMEDRIVE%%HOMEPATH%\` )
+echo     Uses G4F by default (no API key needed)
 echo [N] Non-default install, Set custom install locations
 echo [C] Cancel, Do not install (exit this script)
-echo [O] Optional Files (advanced options) 
+echo [O] Optional Files (API keys for other providers) 
 echo.
 echo You probably want to use [Y].
 echo.
@@ -243,6 +245,21 @@ echo [Y] Yes, Will use the current filepath of: `!SCRIPT_DIR!`
 echo [N] No, Will let you paste in a file path
 echo.
 echo You probably want to use [Y], you can manually move the `yolo.bat` file afterwards.
+echo.
+goto :EOF
+
+:: Prints a prompt for `.openai.apikey`
+:print_optional_menu
+echo.
+echo Optional Files:
+echo.
+echo Note: By default, Yolo uses G4F which requires no API key.
+echo These options are only needed if you want to use other providers.
+echo.
+echo Y. Yes - Create optional API key files
+echo N. No  - Skip (recommended for G4F)
+echo O. Only create optional files and exit
+echo C. Cancel
 echo.
 goto :EOF
 
@@ -298,22 +315,41 @@ goto :EOF
 
 :print_apikey_guide
 echo.
-echo API Key:
+echo API Key Configuration:
 echo.
-echo You need to provide your OpenAI API key to use yolo.
+echo By default, Yolo uses G4F which requires no API key.
+echo However, if you want to use other providers, you'll need their respective API keys.
 echo.
-echo You can get a key from `https://platform.openai.com/account/api-keys` after logging in.
-echo There are multiple options for providing the key:
-echo (1) You can put the key into a `.openai.apikey` file in `%HOMEDRIVE%%HOMEPATH%\` 
-echo Run `install.bat` again and select `O`ptional Files to create a `.openai.apikey` file
-echo (2) You can paste `OPENAI_API_KEY="[yourkey]"` into a `.env` file that should be in the folder yolo is installed in currently.
-if /i !createDIR!==1 ( echo `.env` should be in: !TARGET_DIR! )
-if /i !createDIR!==2 ( echo `.env` should be in: %~dp0 )
-echo (3) You can run `$env:OPENAI_API_KEY="[yourkey]"` in your terminal before using yolo in that terminal
-echo   -If you run PowerShell as administrator you can then run `setx OPENAI_API_KEY "[yourkey]"` to permanently and use yolo in any terminal (you may need to reopen the terminal once).
-echo   -Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `[yourkey]`
-echo (4) Another option is to put the API key in the yolo.yaml configuration file (since v.0.2)
+echo There are multiple options for providing API keys:
+echo (1) Environment Variables (Recommended)
+echo     Run these commands in PowerShell:
+echo     $env:OPENAI_API_KEY="[yourkey]"
+echo     $env:AZURE_OPENAI_API_KEY="[yourkey]"
+echo     $env:ANTHROPIC_API_KEY="[yourkey]"
+echo     $env:GROQ_API_KEY="[yourkey]"
 echo.
-echo Yolo also supports Azure OpenAI, and many other LLMs now. Configure settings in yolo.yaml accordingly.
+echo (2) Configuration File
+echo     Edit yolo.yaml and add your keys:
+if /i !createDIR!==1 ( echo     yolo.yaml is in: !TARGET_DIR! )
+if /i !createDIR!==2 ( echo     yolo.yaml is in: %~dp0 )
+echo.
+echo (3) Environment File
+echo     Create a .env file with your keys:
+if /i !createDIR!==1 ( echo     .env should be in: !TARGET_DIR! )
+if /i !createDIR!==2 ( echo     .env should be in: %~dp0 )
+echo.
+echo (4) API Key File
+echo     Put your OpenAI key in .openai.apikey in %HOMEDRIVE%%HOMEPATH%
+echo     Run install.bat again and select Optional Files to create it
+echo.
+echo Supported Providers:
+echo - G4F (Default, no key needed)
+echo - OpenAI
+echo - Azure OpenAI
+echo - Anthropic (Claude)
+echo - Groq
+echo - Ollama
+echo.
+echo To change providers, update the 'api' setting in yolo.yaml
 echo.
 goto :EOF
