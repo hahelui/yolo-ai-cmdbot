@@ -260,24 +260,44 @@ end"
         
         # Add to appropriate shell config
         if [[ "$SHELL" == "/bin/bash" ]]; then
-            echo -e "Adding configuration to ${BOLD}~/.bash_aliases${NC}"
-            echo "$YOLO_FUNCTION" >> ~/.bash_aliases
-            echo "alias yolo='yolo-ai'" >> ~/.bash_aliases
-            echo "alias computer='yolo-ai'" >> ~/.bash_aliases
+            ALIASES_FILE="$HOME/.bash_aliases"
+            # Create .bash_aliases if it doesn't exist
+            touch "$ALIASES_FILE"
+            # Add source .bash_aliases to .bashrc if not already there
+            if ! grep -q "source ~/.bash_aliases" "$HOME/.bashrc"; then
+                echo "if [ -f ~/.bash_aliases ]; then" >> "$HOME/.bashrc"
+                echo "    source ~/.bash_aliases" >> "$HOME/.bashrc"
+                echo "fi" >> "$HOME/.bashrc"
+            fi
+            echo "$YOLO_FUNCTION" >> "$ALIASES_FILE"
+            echo "alias yolo='yolo-ai'" >> "$ALIASES_FILE"
+            echo "alias computer='yolo-ai'" >> "$ALIASES_FILE"
+            echo -e "${GREEN}✓ Added configuration to ${BOLD}~/.bash_aliases${NC}"
+            # Source bashrc immediately
+            exec bash -l
         elif [[ "$SHELL" == "/bin/zsh" ]]; then
-            echo -e "Adding configuration to ${BOLD}~/.zshrc${NC}"
-            echo "$YOLO_FUNCTION" >> ~/.zshrc
-            echo "alias yolo='yolo-ai'" >> ~/.zshrc
-            echo "alias computer='yolo-ai'" >> ~/.zshrc
+            ZSHRC="$HOME/.zshrc"
+            echo "$YOLO_FUNCTION" >> "$ZSHRC"
+            echo "alias yolo='yolo-ai'" >> "$ZSHRC"
+            echo "alias computer='yolo-ai'" >> "$ZSHRC"
+            echo -e "${GREEN}✓ Added configuration to ${BOLD}~/.zshrc${NC}"
+            # Source zshrc immediately
+            exec zsh -l
         elif [[ "$SHELL" == "/usr/bin/fish" ]] || [[ "$SHELL" == "/bin/fish" ]]; then
-            echo -e "Adding configuration to ${BOLD}~/.config/fish/functions/${NC}"
-            mkdir -p ~/.config/fish/functions
-            echo "$FISH_FUNCTION" > ~/.config/fish/functions/yolo-ai.fish
-            echo "alias yolo 'yolo-ai'" > ~/.config/fish/functions/yolo.fish
-            echo "alias computer 'yolo-ai'" > ~/.config/fish/functions/computer.fish
+            FISH_DIR="$HOME/.config/fish/functions"
+            mkdir -p "$FISH_DIR"
+            echo "$FISH_FUNCTION" > "$FISH_DIR/yolo-ai.fish"
+            echo "alias yolo 'yolo-ai'" > "$FISH_DIR/yolo.fish"
+            echo "alias computer 'yolo-ai'" > "$FISH_DIR/computer.fish"
             echo -e "${GREEN}✓ Fish functions created${NC}"
+            # Source fish config immediately
+            exec fish -l
         else
-            echo -e "${RED}Unsupported shell. Please add aliases manually.${NC}"
+            echo -e "${RED}Unsupported shell ($SHELL). Please add aliases manually:${NC}"
+            echo -e "Add these lines to your shell's configuration file:"
+            echo "$YOLO_FUNCTION"
+            echo "alias yolo='yolo-ai'"
+            echo "alias computer='yolo-ai'"
         fi
         echo -e "${GREEN}✓ Shell integration configured${NC}"
     fi
